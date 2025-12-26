@@ -10,17 +10,17 @@ const api = axios.create({
 
 export const hireLogicAPI = {
   // --- Job Related ---
-  // Matches backend: GET /api/jobs/
   getJobs: () => api.get('/api/jobs/'),
   
-  // Matches backend: POST /api/jobs/
   createJob: (data: any) => api.post('/api/jobs/', data),
   
   // --- Candidate Related ---
-  // Matches backend: POST /api/candidates/upload
+  // Added this to satisfy the useCandidates hook
+  getCandidates: (jobId: string) => api.get(`/api/jobs/${jobId}/candidates`),
+
   uploadResume: (file: File) => {
     const formData = new FormData();
-    // Use 'resume' as the key because your backend expects 'resume: UploadFile'
+    // Use 'resume' as the key to match backend: resume: UploadFile
     formData.append('resume', file);
     return api.post('/api/candidates/upload', formData, {
       headers: {
@@ -29,12 +29,10 @@ export const hireLogicAPI = {
     });
   },
 
-  // Matches backend: GET /api/candidates/{id}
   getCandidateDetails: (candidateId: string) => 
     api.get(`/api/candidates/${candidateId}`),
   
   // --- AI Analysis ---
-  // This matches your Neural Analysis endpoint (POST /analyze)
   analyzeResume: (jobDescription: string, resumeFile: File) => {
     const formData = new FormData();
     formData.append('job_description', jobDescription);
