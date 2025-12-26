@@ -2,7 +2,10 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 
+# This loads the variables from your local .env file
 load_dotenv()
+
+# Use the NAME of the environment variable, not the actual key here!
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class LLMService:
@@ -19,11 +22,10 @@ class LLMService:
         
         Resume Text: {text[:4000]}
         """
-        # We will add the actual OpenAI call logic in the upgrade phase
+        # Logic to call OpenAI will go here
         return {"message": "AI Parser Ready"}
 
     @staticmethod
     async def rank_candidate(resume_data: dict, jd_text: str):
         # Professional ranking logic goes here
         pass
-      
