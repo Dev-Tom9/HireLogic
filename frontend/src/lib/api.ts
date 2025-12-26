@@ -1,22 +1,49 @@
 import axios from 'axios';
 
+// The baseURL should point to your live Render link via the env variable
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 export const hireLogicAPI = {
-  // Job related
-  getJobs: () => api.get('/jobs'),
-  createJob: (data: any) => api.post('/jobs', data),
+  // --- Job Related ---
+  // Matches backend: GET /api/jobs/
+  getJobs: () => api.get('/api/jobs/'),
   
-  // Candidate related
-  uploadResume: (jobId: string, file: File) => {
+  // Matches backend: POST /api/jobs/
+  createJob: (data: any) => api.post('/api/jobs/', data),
+  
+  // --- Candidate Related ---
+  // Matches backend: POST /api/candidates/upload
+  uploadResume: (file: File) => {
     const formData = new FormData();
-    formData.append('file', file);
-    return api.post(`/jobs/${jobId}/resumes`, formData);
+    // Use 'resume' as the key because your backend expects 'resume: UploadFile'
+    formData.append('resume', file);
+    return api.post('/api/candidates/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
-  getCandidates: (jobId: string) => api.get(`/jobs/${jobId}/candidates`),
+
+  // Matches backend: GET /api/candidates/{id}
+  getCandidateDetails: (candidateId: string) => 
+    api.get(`/api/candidates/${candidateId}`),
   
-  // AI Insight
-  getInterviewQuestions: (candidateId: string) => api.get(`/candidates/${candidateId}/interview-questions`),
+  // --- AI Analysis ---
+  // This matches your Neural Analysis endpoint (POST /analyze)
+  analyzeResume: (jobDescription: string, resumeFile: File) => {
+    const formData = new FormData();
+    formData.append('job_description', jobDescription);
+    formData.append('resume', resumeFile);
+    
+    return api.post('/analyze', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
 };
